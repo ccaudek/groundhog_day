@@ -6,10 +6,20 @@ library("lme4")
 library("lcsm")
 library("brms")
 
+# context_1: mood evaluated by the subject at the beginning of the experiment
+# coin: the endpoint of the mood determined by the feedbacks obtained by the
+# subject, from the starting point of context_1.
+# post_context_1: mood evaluated by the subject at the end of the experiment
+
+# coin - context_1: what is the overall gain/loss determined by the feedbacks
+# from the initial point (context_1)
+
+# post_context_1 - context_1: how much is varied the mood from the beginning
+# to the end of the experiment.
 
 # Read subject codes from Excel file -------------------------------------------
 
-subj_codes <- rio::import("../../data/raw/data.xlsx") |>
+subj_codes <- rio::import(here::here("data", "raw", "data.xlsx")) |>
   dplyr::select(subj_code_1, Task1Rev_1, 
                 context_1, control_1, 
                 post_context_1, coin, TIME_start, 
@@ -18,6 +28,8 @@ subj_codes <- rio::import("../../data/raw/data.xlsx") |>
 subj_codes <- subj_codes[!is.na(subj_codes$Task1Rev_1), ]
 subj_codes$subj_idx <- subj_codes$Task1Rev_1
 subj_codes$Task1Rev_1 <- NULL
+
+length(unique(subj_codes$subj_code_1))
 
 
 # Import PRL data form multiple files ------------------------------------------
@@ -46,7 +58,8 @@ for (i in 1:n_files) {
   d$intertrial_delay <- d$V10
   d$img_1_position <- d$V11 # 230 = dx; -230 sn
   d$img_2_position <- d$V12 # 230 = dx; -230 sn
-  d$total_feedback <- d$V13 # mood from the starting value + feedbacks
+  d$total_feedback <- d$V13 # mood after the feedback; it changes in each trial,
+  # depending on the feedback obtained, from the starting value 
 
   d$trial <- 1:30
 
@@ -172,11 +185,8 @@ bysubj_mood_var = df_indexed |>
 
 bysubj_mood_var |> 
   as.data.frame()
-#########
 
-
-
-
+# ------------------------------------------------------------------------------
 
 
 # group by the "group" variable and rank the "value" column
@@ -184,11 +194,18 @@ df_ranked <- d %>%
   group_by(subj_code_1) %>% 
   mutate(rank = dense_rank(time))
 
-# print the result
-glimpse(df_ranked)
+out <- df_ranked |> 
+  group_by(trial) |> 
+  summarize(
+    y1 = mean(is_target_chosen, na.rm = TRUE)
+  )
+
+plot(out$trial, out$y1, type = 'l')
 
 table(df_ranked$subj_code_1, df_ranked$rank)
 
+# the net gain/loss produced by the feedback obtained during the experiment,
+# from the initial "mood"
 df_ranked$gain <- df_ranked$coin - df_ranked$context_1
 
 df_bysubj <- df_ranked |> 
@@ -220,12 +237,12 @@ df_bysubj |>
 foo <- df_bysubj[df_bysubj$gain > -20 & df_bysubj$gain < 20, ]
 
 
-fm <- lmer(gain ~ mood_post + (1 | id), foo)
+fm <- lmer(gain ~ mood_post + (1 | subj_code_1), foo)
 summary(fm)
 
 m1 <- brm(
-  gain ~ mood_post + rank + mood_init + how_much_control + how_long +
-    (1 + rank + mood_post | id), 
+  gain ~ mood_post + rank + how_much_control + how_long + #  + mood_init
+    (1 + rank + mood_post | subj_code_1), 
   foo,
   family = student(),
   backend = "cmdstanr"
@@ -252,25 +269,36 @@ summary(m2)
 conditional_effects(m2, "mood_post")
 
 
-hist(out$sg)
+df_bysubj$mood_change <- df_bysubj$mood_post - df_bysubj$mood_init
 
+hist(df_bysubj$mood_change)
 
-m2 <- brm(
-  sg ~ sm, 
-  out,
-  family = skew_normal(),
+fm <- lmer(mood_change ~ rank + (1 |subj_code_1), data = df_bysubj)
+car::Anova(fm)
+summary(fm)
+
+m3 <- brm(
+  bf(mood_change ~ rank + (1 + rank | subj_code_1)),
+  data=df_bysubj, 
+  family=student(), 
+  cores=4,
   backend = "cmdstanr"
 )
-
-pp_check(m2)
-summary(m2)
-
-
+pp_check(m3)
+summary(m3)
+conditional_effects(m3, "rank")
 
 
-
-
-
+m4 <- brm(
+  bf(mood_post ~ rank + (1 + rank | subj_code_1)),
+  data=df_bysubj, 
+  family=student(), 
+  cores=4,
+  backend = "cmdstanr"
+)
+pp_check(m4)
+summary(m4)
+conditional_effects(m4, "rank")
 
 
 #-------------------------------------------------------------------------------
