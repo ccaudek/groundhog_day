@@ -1,0 +1,29 @@
+name: your_project_name # change this
+
+channels:
+  - bioconda
+  - conda-forge
+  - anaconda
+
+dependencies:
+  # python general
+  - pandas
+  - numpy
+  - scikit-learn
+  - seaborn
+  - matplotlib
+  - jupyterlab
+  - jupyter-book
+
+  # python the project's src 
+  - pip:
+    - -e src/python
+
+  # R general
+  - r-base
+  - r-stringr
+  - bioconductor-clusterProfiler
+
+variables:
+  # environment variables
+  - SRC_R: src/R/project_name

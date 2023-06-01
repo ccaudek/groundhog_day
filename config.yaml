@@ -1,0 +1,10 @@
+# Here we can create project-wide variables to access them from anywhere
+
+penguin_data: "../../../data/prep/penguin_subset.rds"
+res_tab_1: "../../../results/tables/tab_1.txt"
+# Path to Excle file with subject codes.
+excel_subj_codes: "../../data/raw/data.xlsx"
+# Path to individual subjects' data.
+subjects_data_dir: "../../data/raw/experiment_data"
+# Path to file with the complete raw data.
+complete_raw_data: "../../data/prep/groundhog_init.RDS"
