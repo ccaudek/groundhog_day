@@ -1,0 +1,33 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count    min threads    max threads
+---------  -------  -------------  -------------
+all              1              1              1
+read_data        1              1              1
+total            2              1              1
+
+Select jobs to execute...
+
+[Fri Jun  2 09:32:33 2023]
+rule read_data:
+    input: data/raw/data.xlsx, data/raw/experiment_data
+    output: data/prep/groundhog_raw.RDS
+    jobid: 1
+    reason: Missing output files: data/prep/groundhog_raw.RDS; Code has changed since last execution
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  2 09:32:33 2023]
+Error in rule read_data:
+    jobid: 1
+    input: data/raw/data.xlsx, data/raw/experiment_data
+    output: data/prep/groundhog_raw.RDS
+    shell:
+        Rscript workflows/scripts/read_data.R data/raw/data.xlsx data/raw/experiment_data data/prep/groundhog_raw.RDS
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-06-02T093233.166904.snakemake.log

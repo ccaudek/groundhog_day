@@ -1,0 +1,4 @@
+Building DAG of jobs...
+WildcardError in rule read_data in file /Users/corrado/_repositories/groundhog_day/workflows/rules/read_data.smk, line 3:
+Wildcards in input files cannot be determined from output files:
+'excel_codes_path'

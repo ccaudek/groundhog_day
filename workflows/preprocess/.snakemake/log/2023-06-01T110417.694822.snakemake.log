@@ -1,3 +1,0 @@
-NameError in file /Users/corrado/Downloads/snakemake/my_playground/workflows/analyses/new_experiment/Snakefile, line 16:
-name 'penguin_data' is not defined
-  File "/Users/corrado/Downloads/snakemake/my_playground/workflows/analyses/new_experiment/Snakefile", line 16, in <module>

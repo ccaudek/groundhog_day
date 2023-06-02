@@ -1,0 +1,29 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job        count    min threads    max threads
+-------  -------  -------------  -------------
+my_rule        1              1              1
+total          1              1              1
+
+Select jobs to execute...
+
+[Fri Jun  2 10:43:02 2023]
+rule my_rule:
+    input: data/raw/data.xlsx
+    output: data/prep/groundhog_raw.RDS
+    jobid: 0
+    reason: Missing output files: data/prep/groundhog_raw.RDS
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  2 10:43:02 2023]
+Error in rule my_rule:
+    jobid: 0
+    input: data/raw/data.xlsx
+    output: data/prep/groundhog_raw.RDS
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-06-02T104302.587546.snakemake.log

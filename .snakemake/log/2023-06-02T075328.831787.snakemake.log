@@ -1,0 +1,3 @@
+SyntaxError in file /Users/corrado/_repositories/groundhog_day/workflows/rules/read_data.smk, line 11:
+No rule keywords allowed after run/shell/script/notebook/wrapper/template_engine/cwl in rule read_data. (read_data.smk, line 11)
+  File "/Users/corrado/_repositories/groundhog_day/Snakefile", line 27, in <module>

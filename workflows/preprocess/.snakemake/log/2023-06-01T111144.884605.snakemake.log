@@ -1,3 +1,0 @@
-KeyError in file /Users/corrado/Downloads/snakemake/my_playground/workflows/analyses/new_experiment/Snakefile, line 14:
-'res_tab_1'
-  File "/Users/corrado/Downloads/snakemake/my_playground/workflows/analyses/new_experiment/Snakefile", line 14, in <module>

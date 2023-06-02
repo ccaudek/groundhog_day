@@ -1,2 +1,0 @@
-SyntaxError in file /Users/corrado/_repositories/groundhog_day/workflows/preprocess/Snakefile, line 26:
-f-string: unmatched '['

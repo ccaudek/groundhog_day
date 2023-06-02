@@ -1,0 +1,5 @@
+Building DAG of jobs...
+MissingInputException in rule all in file /Users/corrado/_repositories/groundhog_day/Snakefile, line 17:
+Missing input files for rule all:
+    affected files:
+        data/prep/groundhog_raw.RDS
