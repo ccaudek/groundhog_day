@@ -1,0 +1,44 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count    min threads    max threads
+--------------  -------  -------------  -------------
+all                   1              1              1
+data_wrangling        1              1              1
+read_data             1              1              1
+total                 3              1              1
+
+Select jobs to execute...
+
+[Fri Jun  2 12:16:45 2023]
+rule read_data:
+    input: data/raw/data.xlsx, data/raw/experiment_data
+    output: data/prep/groundhog_raw.RDS
+    jobid: 1
+    reason: Code has changed since last execution
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  2 12:16:52 2023]
+Finished job 1.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Fri Jun  2 12:16:52 2023]
+rule data_wrangling:
+    input: data/prep/groundhog_raw.RDS
+    output: data/prep/groundhog_clean.RDS
+    jobid: 2
+    reason: Missing output files: data/prep/groundhog_clean.RDS; Input files updated by another job: data/prep/groundhog_raw.RDS
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  2 12:16:53 2023]
+Error in rule data_wrangling:
+    jobid: 2
+    input: data/prep/groundhog_raw.RDS
+    output: data/prep/groundhog_clean.RDS
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-06-02T121645.023708.snakemake.log

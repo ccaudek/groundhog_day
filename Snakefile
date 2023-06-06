@@ -9,51 +9,38 @@
 configfile: "config.yaml"
 
 
-# Get paths from config file.
-# excel_codes_path = config["excel_subj_codes"]
-# subj_data_dir = config["subjects_data_dir"]
-# raw_data = config["complete_raw_data"]
-#### cleaned_data_path = config["cleaned_data"]
+rule all:
+    input:
+        "data/prep/groundhog_raw.RDS",
+        "data/prep/groundhog_clean.RDS",
+        "data/prep/groundhog_hddmrl_data.csv",
 
 
-# rule my_rule:
-#     input:
-#         "data/raw/data.xlsx",
-#     output:
-#         "data/prep/groundhog_raw.RDS",
-#     script:
-#         "workflows/scripts/my_test.R"
-
-
-# Read individual PRL data files and create a single file
-# with all the subjects' raw data.
+# Read individual PRL files and create a single file
+# with all subjects' raw data.
 rule read_data:
     input:
-        xlsx=config["excel_codes"],  #    "data/raw/data.xlsx",
-        dir_data=config["data_dir"],  #"data/raw/experiment_data",
+        xlsx=config["excel_codes"],
+        dir_data=config["data_dir"],
     output:
         rds=config["complete_data_raw"],
     script:
         "workflows/scripts/import_mpath_data.R"
 
 
-# shell:
-#     "Rscript workflows/scripts/import_mpath_data.R {input} {output}"
-# include: "workflows/rules/read_data.smk"
-# Data wrangling.
-# rule data_wrangling:
-#     input:
-#         raw_data=f"{raw_data}",
-#     output:
-#         clean_data=f"{cleaned_data_path}",
-#     script:
-#         "scripts/data_wrangling.R"
-# rule save_table:
-#     input:
-#         # data="../../../data/prep/penguin_subset.rds",
-#         data=f"{penguin}",
-#     output:
-#         # tab="../../../results/tables/tab_1.txt",
-#         tab=f"{tbl_1}",
-#     script:
-#         "scripts/make_table.R"
+rule data_wrangling:
+    input:
+        rds=config["complete_data_raw"],
+    output:
+        clean=config["cleaned_data"],
+    script:
+        "workflows/scripts/data_wrangling.R"
+
+
+rule data_for_hddmrl:
+    input:
+        clean=config["cleaned_data"],
+    output:
+        hddmrl=config["hddmrl_data"],
+    script:
+        "workflows/scripts/hddmrl_data.R"

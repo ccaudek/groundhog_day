@@ -1,6 +1,0 @@
-# this is the webpage's main page
-- file: notebooks/intro
-# this is a part with some chapters
-- part: Results
-  chapters:
-    - file: notebooks/example_notebook

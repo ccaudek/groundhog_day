@@ -1,8 +1,8 @@
 # Combine the individual subjects' files into a single file
-# with all the subjects' data.
+# with all the data.
 
-suppressPackageStartupMessages(library(rio))
-suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library("rio"))
+suppressPackageStartupMessages(library("tidyverse"))
 
 # Read subject codes from Excel file
 subj_codes <- rio::import(
@@ -20,7 +20,6 @@ subj_codes$subj_idx <- subj_codes$Task1Rev_1
 subj_codes$Task1Rev_1 <- NULL
 
 # Import PRL data form multiple files
-# dir <- "../../data/raw/experiment_data"
 dir <- snakemake@input[["dir_data"]]
 
 file_names <-
@@ -30,7 +29,6 @@ n_files
 d_list <- list()
 
 for (i in 1:n_files) {
-  # d <- read.table(here("data", "raw", "experiment_data", file_names[i]))
   d <- read.table(stringr::str_glue(dir, "/", file_names[i]))
 
   d$subj_idx <- file_names[i]
@@ -41,7 +39,8 @@ for (i in 1:n_files) {
   d$image_more_rewarded <- d$V6
   d$rt_choice <- d$V7
   d$feedback <- ifelse(d$V8 == 1, 1, 0)
-  d$image_chosen <- d$V9 # 1: mi comporterei nello stesso modo
+  d$image_chosen <- d$V9
+  # 1: mi comporterei nello stesso modo
   # 2: mi comporterei in modo diverso
   d$intertrial_delay <- d$V10
   d$img_1_position <- d$V11 # 230 = dx; -230 sn
@@ -59,7 +58,6 @@ df <- do.call(rbind.data.frame, d_list)
 # Join files with PRL data and personal information
 d <- left_join(df, subj_codes, by = "subj_idx")
 
-saveRDS(
-  d,
-  file = snakemake@output[["rds"]]
-)
+saveRDS(d, file = snakemake@output[["rds"]])
+
+# eof ----

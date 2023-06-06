@@ -1,0 +1,30 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count    min threads    max threads
+--------------  -------  -------------  -------------
+all                   1              1              1
+data_wrangling        1              1              1
+total                 2              1              1
+
+Select jobs to execute...
+
+[Mon Jun  5 10:59:10 2023]
+rule data_wrangling:
+    input: data/prep/groundhog_raw.RDS
+    output: data/prep/groundhog_clean.RDS
+    jobid: 2
+    reason: Code has changed since last execution
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Mon Jun  5 10:59:13 2023]
+Error in rule data_wrangling:
+    jobid: 2
+    input: data/prep/groundhog_raw.RDS
+    output: data/prep/groundhog_clean.RDS
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-06-05T105910.231452.snakemake.log

@@ -1,0 +1,4 @@
+WorkflowError in file /Users/corrado/_repositories/groundhog_day/Snakefile, line 17:
+Failed to open source file /Users/corrado/_repositories/groundhog_day/rules/read_data.smk
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/corrado/_repositories/groundhog_day/rules/read_data.smk'
+  File "/Users/corrado/_repositories/groundhog_day/Snakefile", line 17, in <module>
