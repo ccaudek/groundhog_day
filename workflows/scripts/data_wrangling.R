@@ -1,14 +1,35 @@
+# Script name: data_wrangling.R
+# Project: groundhog_day
+# Script purpose: data cleaning
+# @author: Corrado Caudek <corrado.caudek@unifi.it>
+# Date Created: Wed Jun  7 22:20:19 2023
+# Last Modified Date: Wed Jun  7 22:20:19 2023
+#
+# 👉 
+
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 # suppressPackageStartupMessages(library("rio"))
 suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("mice"))
 
 options(max.print = .Machine$integer.max)
 
+# ---------------------
+# Read RDS file
+# ---------------------
+
 d <- readRDS(file = snakemake@input[["rds"]])
 # d <- readRDS("data/prep/groundhog_raw.RDS")
 
 # length(unique(d$subj_code_1))
 # [1] 305
+
+# ---------------------
+# Clean data
+# ---------------------
 
 # Remove variable always equal to 1.
 d$has_answered <- NULL
@@ -145,12 +166,12 @@ rm(df_bysubj_choices, df_bad_ids, bad_ids)
 # a filter to keep only the groups where there is at least one observation 
 # with days equal to 1 (any(days == 1)) and at least one observation with days 
 # equal to 2 (any(days == 2)). This ensures that the selected levels of 
-# subj_code_1 have at least the levels 1 and 2 for days.
+# subj_code_1 have at least the levels 1, 2, 3, 4 for days.
 df <- d %>%
   group_by(user_id) %>%
   filter(
-    any(days == 1) & any(days == 2) 
-      # & any(days == 3) & any(days == 4) 
+    any(days == 1) & any(days == 2) & 
+      any(days == 3) & any(days == 4) 
     ) %>%
   ungroup()
 
@@ -179,13 +200,16 @@ d$rt_choice <- NULL
 df_clean <- d |>
   dplyr::select(-c(starts_with("V")))
 
-# Perform multiple imputation without adding noise.
+# Perform multiple imputation.
 set.seed(124)
 imp <- mice(df_clean, m = 1, method = "norm")
 # Access the completed imputed data
 dd <- complete(imp)
 
-# Clean up ---------------------------------------------------------------------
+# ---------------------
+# Remove outliers
+# ---------------------
+
 # Outlier detection by using Mahalanobis distance on the following 
 # data: mood_pre, mood_post, instant_mood, sd(instant_mood).
 
@@ -213,8 +237,11 @@ df_clean <- dd[!(dd$user_id %in% mood_bad_ids), ]
 # length(unique(df_clean$user_id))
 # [1] 243
 
-# ------------------------------------------------------------------------------
+# ---------------------
+# Save RDS file
+# ---------------------
 
 saveRDS(df_clean, file = snakemake@output[["clean"]])
+
 
 # eof ----

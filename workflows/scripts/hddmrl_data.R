@@ -7,11 +7,23 @@
 #
 # 👉 
 
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 suppressPackageStartupMessages(library("rio"))
 suppressPackageStartupMessages(library("tidyverse"))
 
+# ---------------------
+# Read RDS file
+# ---------------------
+
 d <- readRDS(file = snakemake@input[["clean"]])
 # d <- readRDS("data/prep/groundhog_clean.RDS")
+
+# ---------------------
+# Add required columns for HDDMrl
+# ---------------------
 
 d$subj_idx <- as.numeric(factor(as.character(d$user_id)))
 
@@ -93,8 +105,13 @@ for_hddm_df <- df_sorted |>
   ) |> 
   ungroup()
 
+# ---------------------
+# Save CSV file
+# ---------------------
+
 rio::export(for_hddm_df, file = snakemake@output[["hddmrl"]])
 # rio::export(for_hddm_df, "marmotta.csv")
+
 
 # eof ----
 

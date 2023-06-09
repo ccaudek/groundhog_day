@@ -1,10 +1,24 @@
-# Combine the individual subjects' files into a single file
-# with all the data.
+# Script name: import_mpath_data.R
+# Project: groundhog_day
+# Script purpose: Combine the individual subjects' files into a single 
+#   file with the data from the Excel file.
+# @author: Corrado Caudek <corrado.caudek@unifi.it>
+# Date Created: Wed Jun  7 22:16:48 2023
+# Last Modified Date: Wed Jun  7 22:16:48 2023
+#
+# 👉 
+
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 suppressPackageStartupMessages(library("rio"))
 suppressPackageStartupMessages(library("tidyverse"))
 
+# ---------------------
 # Read subject codes from Excel file
+# ---------------------
+
 subj_codes <- rio::import(
   snakemake@input[["xlsx"]]
 ) |>
@@ -19,7 +33,10 @@ subj_codes <- subj_codes[!is.na(subj_codes$Task1Rev_1), ]
 subj_codes$subj_idx <- subj_codes$Task1Rev_1
 subj_codes$Task1Rev_1 <- NULL
 
+# ---------------------
 # Import PRL data form multiple files
+# ---------------------
+
 dir <- snakemake@input[["dir_data"]]
 
 file_names <-
@@ -55,9 +72,17 @@ for (i in 1:n_files) {
 # Convert list into data.frame
 df <- do.call(rbind.data.frame, d_list)
 
+# ---------------------
 # Join files with PRL data and personal information
+# ---------------------
+
 d <- left_join(df, subj_codes, by = "subj_idx")
 
+# ---------------------
+# Save RDS file
+# ---------------------
+
 saveRDS(d, file = snakemake@output[["rds"]])
+
 
 # eof ----
