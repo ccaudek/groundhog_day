@@ -97,7 +97,7 @@ df_sorted <- df_indexed[
 
 for_hddm_df <- df_sorted |>
   dplyr::select(
-    subj_idx, user_id, epoch, days, control, 
+    subj_idx, user_id, epoch, ema_number, control, 
     fmood, mood_num, mood_pre, mood_post,
     rt, rt_inst, 
     response, feedback, split_by, q_init, 

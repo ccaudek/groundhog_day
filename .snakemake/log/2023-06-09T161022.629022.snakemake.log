@@ -1,0 +1,53 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+data_for_hddmrl        1              1              1
+data_wrangling         1              1              1
+total                  3              1              1
+
+Select jobs to execute...
+
+[Fri Jun  9 16:10:23 2023]
+rule data_wrangling:
+    input: data/prep/groundhog_raw.RDS
+    output: data/prep/groundhog_clean.RDS
+    log: logs/data_wrangling.log
+    jobid: 2
+    reason: Code has changed since last execution
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  9 16:10:32 2023]
+Finished job 2.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Fri Jun  9 16:10:32 2023]
+rule data_for_hddmrl:
+    input: data/prep/groundhog_clean.RDS
+    output: data/prep/groundhog_hddmrl_data.csv
+    log: logs/data_for_hddmrl.log
+    jobid: 3
+    reason: Input files updated by another job: data/prep/groundhog_clean.RDS
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  9 16:10:34 2023]
+Finished job 3.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Fri Jun  9 16:10:34 2023]
+localrule all:
+    input: data/prep/groundhog_raw.RDS, data/prep/groundhog_clean.RDS, data/prep/groundhog_hddmrl_data.csv
+    jobid: 0
+    reason: Input files updated by another job: data/prep/groundhog_clean.RDS, data/prep/groundhog_hddmrl_data.csv
+    resources: tmpdir=/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T
+
+[Fri Jun  9 16:10:34 2023]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: .snakemake/log/2023-06-09T161022.629022.snakemake.log

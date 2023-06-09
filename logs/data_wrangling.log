@@ -1,10 +1,10 @@
 
  iter imp variable
-  1   1  rt  rt_inst
-  2   1  rt  rt_inst
-  3   1  rt  rt_inst
-  4   1  rt  rt_inst
-  5   1  rt  rt_inst
+  1   1  rt  mood_pre  mood_post  gain  rt_inst
+  2   1  rt  mood_pre  mood_post  gain  rt_inst
+  3   1  rt  mood_pre  mood_post  gain  rt_inst
+  4   1  rt  mood_pre  mood_post  gain  rt_inst
+  5   1  rt  mood_pre  mood_post  gain  rt_inst
 Warning message:
-Number of logged events: 17 
+Number of logged events: 18 
 `summarise()` has grouped output by 'user_id'. You can override using the `.groups` argument.

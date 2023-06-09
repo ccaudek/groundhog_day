@@ -41,7 +41,7 @@ d$subj_code_1[d$subj_code_1 == "338 883 3022"] <- "3388833022"
 
 # Recode epoch with values 1, 2.
 d$epochs <-
-  ifelse(
+  if_else(
     grepl("\\d$", d$epoch), substr(d$epoch, nchar(d$epoch), nchar(d$epoch)),
     NA
   ) |> 
@@ -71,7 +71,7 @@ d <- d |>
     final_score = coin
   )
 
-d$is_target_chosen <- ifelse(d$image_chosen == 1, 1, 0)
+d$is_target_chosen <- if_else(d$image_chosen == 1, 1, 0)
 d$image_chosen <- NULL
 
 # Convert date into numeric variable.
@@ -117,7 +117,7 @@ d$gain <- d$final_score - d$mood_pre
 # Compute accuracy defined as choosing the more rewarding stimulus from 
 # the first and the second epoch (Geana et al., 2021).
 # unique(d$is_target_chosen)
-d$accuracy <- ifelse(
+d$accuracy <- if_else(
   d$epoch == 1 & d$is_target_chosen == 1 |
     d$epoch == 2 & d$is_target_chosen == 0,
   1, 0
@@ -138,7 +138,6 @@ d$accuracy <- ifelse(
 #     )
 # 
 # plot(out$trial, out$y1, type = "l")
-
 
 # Find subjects who have always select only the option "I would repeat the same
 # action as I did", or only selected the opposite option.
@@ -161,7 +160,7 @@ rm(df_bysubj_choices, df_bad_ids, bad_ids)
 # length(unique(d$user_id))
 # [1] 290
 
-# Remove subjects who completed the task only once.
+# Remove subjects who did not completed the task enough times.
 # From chatGTP: group the data by subj_code_1 using group_by(). Then, apply 
 # a filter to keep only the groups where there is at least one observation 
 # with days equal to 1 (any(days == 1)) and at least one observation with days 
@@ -170,39 +169,48 @@ rm(df_bysubj_choices, df_bad_ids, bad_ids)
 df <- d %>%
   group_by(user_id) %>%
   filter(
-    any(days == 1) & any(days == 2) & 
-      any(days == 3) & any(days == 4) 
+    any(days == 1) & any(days == 2) & any(days == 3) & any(days == 4) 
     ) %>%
   ungroup()
-
-# length(unique(df$user_id))
-# [1] 256
 
 # Clean up
 d <- df
 rm(df)
 
-# length(unique(df$user_id))
+# length(unique(d$user_id))
+# [1] 216
 
 # Clean up RTS.
 # RTs for the judgment of the mood in the particular moment ("how do you feed 
 # in this moment?")
 d$rt_inst <- d$rt / 1000
-d$rt_inst <- ifelse(d$rt_inst > 10 | d$rt_inst < 0.25, NA, d$rt_inst)
+d$rt_inst <- if_else(d$rt_inst > 10 | d$rt_inst < 0.25, NA, d$rt_inst)
 
 # RTs for the PRL task.
 d$rt <- d$rt_choice / 1000
-d$rt <- ifelse(d$rt > 15 | d$rt < 0.25, NA, d$rt)
+d$rt <- if_else(d$rt > 15 | d$rt < 0.25, NA, d$rt)
 d$rt_choice <- NULL
 # hist(d$rt)
 
-# Remove useless columns of DataFrame.
+# Replace mood_pre == 50 | mood_post == 50 with NA.
+d$mood_pre <- if_else(d$mood_pre == -50 | d$mood_pre == 50, NA, d$mood_pre)
+d$mood_post <- if_else(d$mood_post == -50 | d$mood_post == 50, NA, d$mood_post)
+
+# Replace gain < -20 | gain > 20 with NA.
+d$gain <- if_else(d$gain < -21 | d$gain > 21, NA, d$gain)
+
+# Replace TIME_total > 15 with NA.
+# d$TIME_total <- ifelse(d$TIME_total > 15, NA, d$TIME_total)
+
+# Remove useless columns.
 df_clean <- d |>
   dplyr::select(-c(starts_with("V")))
 
-# Perform multiple imputation.
+# Impute data
 set.seed(124)
-imp <- mice(df_clean, m = 1, method = "norm")
+# Deterministic regression imputation 
+# !! If Snakemake produces ERROR, change this !!
+imp <- mice(df_clean, method = "norm.nob", m = 1) 
 # Access the completed imputed data
 dd <- complete(imp)
 
@@ -210,8 +218,8 @@ dd <- complete(imp)
 # Remove outliers
 # ---------------------
 
-# Outlier detection by using Mahalanobis distance on the following 
-# data: mood_pre, mood_post, instant_mood, sd(instant_mood).
+# Outlier detection with Mahalanobis distance on the following 
+# columns: mood_pre, mood_post, instant_mood, sd(instant_mood).
 
 mood_dat <- dd |> 
   group_by(user_id, days) |> 
@@ -233,9 +241,22 @@ mood_bad_ids <- mood_dat[names_outliers_MH, ]$user_id |>
   as.numeric()
 
 df_clean <- dd[!(dd$user_id %in% mood_bad_ids), ]
-
 # length(unique(df_clean$user_id))
-# [1] 243
+# [1] 205
+
+df_clean$mood_change <- df_clean$mood_post - df_clean$mood_pre
+df_clean$subj_day <- paste(df_clean$user_id, df_clean$days, sep="")
+df_clean$epoch <- if_else(df_clean$epoch == 1, 0, 1)
+
+# Rescale mood_pre, mood_post to have minimum = -1 and maximum = +1.
+df_clean$mood_pre <- scales::rescale(df_clean$mood_pre, to = c(-1, 1))
+df_clean$mood_post <- scales::rescale(df_clean$mood_post, to = c(-1, 1))
+
+df_clean <- df_clean |> 
+  dplyr::rename(
+    ema_number = days
+  )
+
 
 # ---------------------
 # Save RDS file
