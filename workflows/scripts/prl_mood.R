@@ -6,6 +6,8 @@
 # Last Modified Date: Fri Jun  9 08:52:17 2023
 #
 # 👉 
+#   https://www.frontiersin.org/articles/10.3389/fpsyg.2019.01698/full
+
 
 log <- file(snakemake@log[[1]], open="wt")
 sink(log)
@@ -20,7 +22,6 @@ library("lme4")
 library("brms")
 library("effectsize")
 library("scales")
-library("bmmb")
 
 
 
@@ -56,13 +57,6 @@ d |>
   geom_line() +
   geom_point()+
   geom_errorbar(aes(ymin=gain-sd, ymax=gain+sd), width=.2)
-
-fm <- lmer(
-  gain ~ ema_number + mood_post +
-    (ema_number + mood_post | user_id),
-  d
-)
-summary(fm)
 
 
 unique_subjects <- unique(d$user_id)
@@ -103,6 +97,7 @@ df_bysubj <- d |>
   mutate(mood_post = rescale(mood_post, to = c(-1, 1))) %>%
   ungroup()
 
+
 fm <- lmer(
   gain ~ mood_post + ema_number +
     (1 + mood_post + ema_number | user_id), 
@@ -112,7 +107,7 @@ fm <- lmer(
 )
 summary(fm)
 plot_model(fm, "eff", terms = c("mood_post"))
-
+plot_model(fm, "eff", terms = c("ema_number"))
 
 
 fm <- lmer(
@@ -127,20 +122,20 @@ summary(rePCA(fm))
 
 plot_model(fm, "eff", terms = c("days", "epoch", "mood_post"))
 
-
 m1 <- brm(
   gain ~ mood_post * ema_number + 
-    (1 + mood_post * ema_number | user_id), 
+    (1 + mood_post + ema_number | user_id), 
   family = asym_laplace(),
   backend = "cmdstanr",
   data = df_bysubj
 )
+
 summary(m1)
-conditional_effects(m1, "mood_post")
+conditional_effects(m1, "mood_post:ema_number")
 pp_check(m1)
 
 
-
+hist((df_bysubj$gain))
 
 
 
@@ -191,3 +186,217 @@ conditional_effects(m2, "days")
 performance::r2_bayes(m2)
 performance::r2_loo(m2)
 
+
+hist(d$instant_mood)
+
+foo <- d |> 
+  group_by(user_id, ema_number) |> 
+  summarize(
+    instant_mood = mean(instant_mood),
+    mood_pre = mean(mood_pre),
+    mood_post = mean(mood_post),
+    gain = mean(gain),
+    TIME_total = mean(TIME_total)
+  ) |> 
+  ungroup()
+
+fm <- lmer(
+  instant_mood ~ 1 + ema_number + mood_pre +
+    (1 + ema_number | user_id),
+  foo
+)
+summary(fm)
+
+# Lattice plot for NA vs. Performance Type
+d |> 
+  dplyr::filter(ema_number < 9) |> 
+  group_by(trial) |> 
+  summarize(
+    instant_mood = mean(instant_mood)
+  ) |> 
+  #dplyr::filter(ema_number == 1) |> 
+ggplot(aes(x=factor(trial), y=instant_mood)) + 
+  geom_point() + 
+  #facet_wrap(~ema_number,ncol=4) +   
+  #theme(strip.text.x=element_blank()) +
+  labs(x="Instant mood",y="Gain")
+
+foo <- d |> 
+  group_by(trial) |> 
+  summarize(
+    imood = mean(instant_mood)
+  )
+
+fm <- lm(
+  imood ~ poly(trial, 3),
+  foo
+)
+
+plot(foo$trial, foo$imood)
+lines(sort(foo$trial),                 # Draw polynomial regression curve
+      fitted(fm)[order(foo$trial)],
+      col = "red",
+      type = "l")
+
+#----------------
+# Instant mood.
+#----------------
+# Regression Discontinuity
+# https://mixtape.scunning.com/06-regression_discontinuity
+
+m0 <- lmer(
+  instant_mood ~ 1 + (1 | user_id) + (1 | ema_number),
+  data = d
+)
+summary(m0)  
+
+icc = 0.25737 / (0.25737 + 0.07843 + 1.05783)
+icc
+# 18.5% of the total variability in performance anxiety scores are 
+# attributable to differences among subjects. In this particular model, 
+# we can also say that the average correlation for any pair of responses 
+# from the same individual is a moderately low .185.
+
+d$user_day <- paste(d$user_id, d$ema_number, sep="_")
+
+library(splines)
+m1 <- lmer(
+  instant_mood ~ 1 + ns(trial, 3) + 
+    (1 + ns(trial, 3) | user_id) + (1 | user_day),
+  control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb')),
+  data = d
+)
+summary(m1) 
+
+d$predicted <- predict(m1, newdata = d, type = "response")
+
+df_forplot <- d |> 
+  group_by(trial) |> 
+  summarize(
+    y = mean(instant_mood),
+    yhat = mean(predicted)
+  )
+
+plot(df_forplot$trial, df_forplot$y, pch = 16, xlab = "Predictor 1", ylab = "Judgment")
+lines(df_forplot$trial, df_forplot$yhat, col = "blue", lwd = 2)
+
+
+
+m3 <- lmer(
+  instant_mood ~ 1 + trial + 
+    (1 + trial | user_id) + (1 | user_day),
+  control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb')),
+  data = d, subset=trial < 16
+)
+summary(m3) 
+
+m4 <- lmer(
+  instant_mood ~ 1 + trial + 
+    (1 + trial | user_id) + (1 | user_day),
+  control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb')),
+  data = d, subset=trial > 15
+)
+summary(m4) 
+
+
+df_byday <- d |> 
+  group_by(user_id, ema_number) |> 
+  summarize(
+    control = mean(control),
+    mood_pre = mean(mood_pre),
+    mood_post = mean(mood_post)
+  ) |> 
+  ungroup()
+df_byday$user_day <- paste(df_byday$user_id, df_byday$ema_number, sep="_")
+
+bm5 <- brm(
+  control ~ 1 + mood_pre + mood_post +
+    (1 + mood_pre + mood_post | user_id) + (1 | ema_number),
+  family = cumulative("probit"),
+  data = df_byday,
+  init = 0.1,
+  backend = "cmdstanr"
+)
+pp_check(bm5)
+conditional_effects(bm5, "mood_pre", categorical = TRUE)
+conditional_effects(bm5, "mood_post", categorical = TRUE)
+summary(bm5)
+
+hist(df_byday$mood_pre)
+
+# Rescale between 0 and 1.
+df_byday$mood_pre <- scales::rescale(df_byday$mood_pre, to = c(0.0001, 0.9999))
+
+bm6 <- brm(
+  mood_pre ~ 1 + control +
+    (1 + control | user_id) + (1 | ema_number),
+  family = "beta",
+  data = df_byday,
+  init = 0.1,
+  backend = "cmdstanr"
+)
+pp_check(bm6)
+conditional_effects(bm6, "control")
+summary(bm6)
+
+
+m5 <- lmer(
+  control ~ 1 + mood_pre + mood_post +
+    (1 + mood_pre + mood_post | user_id) + (1 | ema_number),
+  control = lmerControl(optimizer ='optimx', optCtrl=list(method='nlminb')),
+  data = df_byday
+)
+summary(m5) 
+summary(rePCA(m5))
+
+fm1 <- lmer(
+  instant_mood ~ poly(trial, 3) +
+    (poly(trial, 3) | user_id) +
+    (1 | ema_number),
+  data = d
+)
+summary(fm1)  
+
+
+foo <- d |> 
+  group_by(user_id, ema_number) |> 
+  summarize(
+    imood = mean(instant_mood),
+    control = mean(control),
+    mood_post = mean(mood_post),
+    mood_pre = mean(mood_pre),
+    gain = mean(gain),
+    time = mean(TIME_total)
+  ) |> 
+  ungroup()
+
+fm2 <- lmer(
+  control ~ 1 + mood_pre +
+    (1 + mood_pre | user_id) +  (1 | ema_number),
+  data = foo
+)
+summary(fm2)  
+
+library(rdrobust)
+
+foo <- d |> 
+  group_by(user_id, trial) |> 
+  summarize(
+    imood = mean(instant_mood),
+  ) |> 
+  ungroup()
+
+rdr <- rdrobust(
+  y = foo$imood,
+  x = foo$trial, 
+  c = 16
+)
+summary(rdr)
+
+
+fm2 <- lmer(
+  gain ~ 1 + control * mood_pre +
+    (1 + control + mood_pre | user_id) + (1 | ema_number),
+  data = foo
+)
+summary(fm2)  

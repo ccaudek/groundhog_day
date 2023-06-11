@@ -20,6 +20,11 @@ rule all:
         "data/prep/groundhog_raw.RDS",
         "data/prep/groundhog_clean.RDS",
         "data/prep/groundhog_hddmrl_data.csv",
+        "results/brms/fitted_models/brms_moodpre_1.RDS",
+        "results/brms/tables/brms_moodpre_1.csv",
+
+
+include: "workflows/rules/common.smk"
 
 
 # Read individual PRL files and create a single file
@@ -46,6 +51,19 @@ rule data_wrangling:
         "logs/data_wrangling.log",
     script:
         "workflows/scripts/data_wrangling.R"
+
+
+# Effect of control on mood_pre.
+rule moodpre_tilda_control:
+    input:
+        clean=config["cleaned_data"],
+    output:
+        fit=config["brms_fit_1"],
+        csv=config["brms_table_1"],
+    log:
+        "logs/moodpre_tilda_control.log",
+    script:
+        "workflows/scripts/brms_moodpre_control.R"
 
 
 # Write input file for HDDMrl.

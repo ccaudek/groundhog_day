@@ -79,7 +79,7 @@ df <- do.call(rbind.data.frame, d_list)
 d <- left_join(df, subj_codes, by = "subj_idx")
 
 # ---------------------
-# Save RDS file
+# Save for later use
 # ---------------------
 
 saveRDS(d, file = snakemake@output[["rds"]])

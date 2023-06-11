@@ -13,7 +13,9 @@ sink(log, type="message")
 
 # suppressPackageStartupMessages(library("rio"))
 suppressPackageStartupMessages(library("tidyverse"))
+suppressPackageStartupMessages(library("naniar"))
 suppressPackageStartupMessages(library("mice"))
+suppressPackageStartupMessages(library("recipes"))
 
 options(max.print = .Machine$integer.max)
 
@@ -206,11 +208,29 @@ d$gain <- if_else(d$gain < -21 | d$gain > 21, NA, d$gain)
 df_clean <- d |>
   dplyr::select(-c(starts_with("V")))
 
+if (0) {
+  # missing data by feature (percentage)
+  df_clean %>% 
+    gg_miss_var(show_pct = TRUE)
+  
+  # intersection
+  df_clean %>% 
+    gg_miss_upset()
+}
+
+
 # Impute data
-set.seed(124)
 # Deterministic regression imputation 
-# !! If Snakemake produces ERROR, change this !!
-imp <- mice(df_clean, method = "norm.nob", m = 1) 
+# >>> If Snakemake produces an ERROR, change this <<<
+set.seed(12345)
+ini <- mice(df_clean, maxit = 0)
+meth <- ini$meth
+meth["gain"] <- "norm.nob"
+post <- ini$post
+# The imputed values of gain are constrained between -21 and 21.
+post["gain"] <- "imp[[j]][, i] <- squeeze(imp[[j]][, i], c(-21, 21))"
+imp <- mice(df_clean, meth=meth, post=post, m = 1, print=FALSE)
+# imp <- mice(df_clean, method = "norm.nob", m = 1) 
 # Access the completed imputed data
 dd <- complete(imp)
 
@@ -227,7 +247,7 @@ mood_dat <- dd |>
     mood_pre = mean(mood_pre),
     mood_post = mean(mood_post),
     mood_ist = mean(instant_mood),
-    mood_ist_sd = sd(instant_mood)
+    mood_ist_sd = sd(instant_mood),
   ) |> 
   ungroup()
 
@@ -259,7 +279,7 @@ df_clean <- df_clean |>
 
 
 # ---------------------
-# Save RDS file
+# Store for later use
 # ---------------------
 
 saveRDS(df_clean, file = snakemake@output[["clean"]])
