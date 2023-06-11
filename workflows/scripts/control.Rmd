@@ -1,0 +1,53 @@
+---
+title: "Control report"
+author: "Corrado Caudek"
+params:
+  rmd: "PCA.Rmd"
+date: \`r format(Sys.Date()," %d.%m.%Y")`
+output:
+  html_document:
+  highlight: tango
+  number_sections: no
+  theme: default
+  toc: yes
+  toc_depth: 3
+  toc_float:
+    collapsed: no
+    smooth_scroll: yes
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("tidyverse")
+```
+
+This is a test.
+
+```{r}
+set.seed(123)
+plot(density(rnorm(100)))
+```
+
+Reading from snakemake@input:
+
+```{r}
+d <- readRDS(snakemake@input[["clean"]])
+```
+
+Printing a plot
+
+```{r}
+d |> 
+  group_by(trial) |> 
+  summarize(
+    y = mean(rt, na.rm = T)
+  ) |> 
+  ungroup() |> 
+  ggplot(aes(x=trial, y = y)) +
+  geom_point()
+```
+
+

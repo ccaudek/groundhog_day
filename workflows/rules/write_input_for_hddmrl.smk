@@ -6,5 +6,3 @@ rule data_for_hddmrl:
         hddmrl=config["hddmrl_data"],
     log:
         "logs/data_for_hddmrl.log",
-    script:
-        "workflows/scripts/hddmrl_data.R"

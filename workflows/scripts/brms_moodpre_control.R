@@ -26,6 +26,7 @@ suppressPackageStartupMessages({
   # Modeling:
   library("cmdstanr")
   library("brms")
+  library("ggpubr")
 })
 
 df_byday <- d |> 
@@ -71,11 +72,9 @@ saveRDS(bmod, snakemake@output[["fit"]])
 
 # pp_check(bmod)
 
-# fig_1 <- conditional_effects(bmod, "control")
-# ggsave(
-#   "results/figures/brms_fig_moodpre_1.pdf", 
-#   width = 4, height = 4
-# )
+# p <- conditional_effects(bmod, "control")
+# ggsave(snakemake@output$pdf, height = 6, width = 8)
+# ggsave("results/brms/figures/brms_fig_moodpre_1.pdf", height = 6, width = 8)
 
 a <- summary(bmod)
 summary_mod <- rbind(data.frame(a$fixed), data.frame(a$spec_pars) ) %>%

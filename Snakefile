@@ -22,6 +22,7 @@ rule all:
         "data/prep/groundhog_hddmrl_data.csv",
         "results/brms/fitted_models/brms_moodpre_1.RDS",
         "results/brms/tables/brms_moodpre_1.csv",
+        "workflows/reports/control_report.html",
 
 
 include: "workflows/rules/common.smk"
@@ -64,6 +65,15 @@ rule moodpre_tilda_control:
         "logs/moodpre_tilda_control.log",
     script:
         "workflows/scripts/brms_moodpre_control.R"
+
+
+rule control_report:
+    input:
+        clean=config["cleaned_data"],
+    output:
+        "workflows/reports/control_report.html",
+    script:
+        "workflows/scripts/control.Rmd"
 
 
 # Write input file for HDDMrl.
