@@ -1,4 +1,21 @@
-# Groundhog_day project
+# Snakemake workflow: Groundhog Day
+
+[![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
+[![GitHub actions status](https://github.com/ccaudek/groundhog_day/workflows/Tests/badge.svg?branch=main)](https://github.com/ccaudek/groundhog_day/actions?query=branch%3Amain+workflow%3ATests)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+
+
+A Snakemake workflow for the Groundhog Day project.
+
+## Usage
+
+The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
+
+## TODO
+
+* Replace `<owner>` and `<repo>` everywhere in the template (also under .github/workflows) with the correct `<repo>` name and owning user or organization.
+* Replace `<name>` with the workflow name (can be the same as `<repo>`).
+* Replace `<description>` with a description of what the workflow does.
 
 ## Question
 
@@ -26,11 +43,11 @@ At the conclusion of the session, participants were once again asked to rate the
 
 ## Data dictionary
 
-- rank: session coded with 1 for the first notification day, 2 for the second notification day, and so on.
-- context_1: rating of the mood at the time of the notification
-- control_1: Assessment of the perceived level of control that participants believe they had over the significant event of the day
-- post_context_1: rating of the mood at the end of the PRL session
-- coin: the endpoint of the mood determined by the feedbacks obtained by the subject, from the starting point of context_1
+* rank: session coded with 1 for the first notification day, 2 for the second notification day, and so on.
+* context_1: rating of the mood at the time of the notification
+* control_1: Assessment of the perceived level of control that participants believe they had over the significant event of the day
+* post_context_1: rating of the mood at the end of the PRL session
+* coin: the endpoint of the mood determined by the feedbacks obtained by the subject, from the starting point of context_1
 
 ## Folder structure
 

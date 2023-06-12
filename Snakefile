@@ -1,9 +1,6 @@
 # Author: Corrado Caudek
 # Project: Groundhog Day
-#
-# Script purpose
-# --------------
-# Data preprocessing.
+
 
 from pathlib import Path
 import os
@@ -12,9 +9,11 @@ print(f"Current directory: {Path.cwd()}")
 print(f"Home directory: {Path.home()}")
 
 
+## Configuration file
 configfile: "config.yaml"
 
 
+# Run all analyses
 rule all:
     input:
         "data/prep/groundhog_raw.RDS",
@@ -22,10 +21,10 @@ rule all:
         "data/prep/groundhog_hddmrl_data.csv",
         "results/brms/fitted_models/brms_moodpre_1.RDS",
         "results/brms/tables/brms_moodpre_1.csv",
-        "workflows/reports/control_report.html",
+        "workflows/report/control_report.html",
 
 
-include: "workflows/rules/common.smk"
+# include: "workflows/rules/common.smk"
 
 
 # Read individual PRL files and create a single file
@@ -71,7 +70,7 @@ rule control_report:
     input:
         clean=config["cleaned_data"],
     output:
-        "workflows/reports/control_report.html",
+        "workflows/report/control_report.html",
     script:
         "workflows/scripts/control.Rmd"
 
@@ -86,3 +85,12 @@ rule data_for_hddmrl:
         "logs/data_for_hddmrl.log",
     script:
         "workflows/scripts/hddmrl_data.R"
+
+
+# Success and failure messages
+onsuccess:
+    print("\n 🎉 Success! The Snakemake workflow is completed.\n")
+
+
+onerror:
+    print("\n ⛔️ Error! The Snakemake workflow aborted.\n")

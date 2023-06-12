@@ -50,4 +50,12 @@ d |>
   geom_point()
 ```
 
+## Session info
+
+The analyses above were performed with the following package versions:
+
+```{r session-info}
+sessionInfo()
+date()
+```
 
