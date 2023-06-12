@@ -1,15 +1,17 @@
 # Snakemake workflow: Groundhog Day
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/ccaudek/groundhog_day/workflows/Tests/badge.svg?branch=main)](https://github.com/ccaudek/groundhog_day/actions?query=branch%3Amain+workflow%3ATests)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
-
 
 A Snakemake workflow for the Groundhog Day project.
 
 ## Usage
 
-The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
+To run this workflow, type the following instruction in the terminal from the main directory:
+
+```bash
+snakemake --cores 1
+```
 
 ## TODO
 

@@ -322,15 +322,12 @@ conditional_effects(bm5, "mood_pre", categorical = TRUE)
 conditional_effects(bm5, "mood_post", categorical = TRUE)
 summary(bm5)
 
-hist(df_byday$mood_pre)
-
-# Rescale between 0 and 1.
-df_byday$mood_pre <- scales::rescale(df_byday$mood_pre, to = c(0.0001, 0.9999))
+plot(density(df_byday$mood_pre))
 
 bm6 <- brm(
   mood_pre ~ 1 + control +
     (1 + control | user_id) + (1 | ema_number),
-  family = "beta",
+  family = skew_normal(),
   data = df_byday,
   init = 0.1,
   backend = "cmdstanr"
@@ -338,6 +335,25 @@ bm6 <- brm(
 pp_check(bm6)
 conditional_effects(bm6, "control")
 summary(bm6)
+
+
+
+a <- summary(bm6)
+summary_mod1 <- rbind(data.frame(a$fixed), data.frame(a$spec_pars) )
+rownames(summary_mod1) <- c("$\\beta_0$", "$\\beta$", "$\\sigma_{e}$", "$\\alpha$")
+colnames(summary_mod1) <- c("mean","SE", "lower bound", "upper bound", "Rhat", "Bulk ESS", "Tail ESS")
+
+summary_mod1 %<>%
+  select(-c("Bulk ESS", "Tail ESS")) %>% # removing ESS
+  rownames_to_column(var = "parameter") 
+
+summary_mod1 <- summary_mod1 |> mutate_if(is.numeric, round, 3)
+
+write.csv(summary_mod1, file = snakemake@output[["table_1"]], row.names = FALSE)
+
+
+
+
 
 
 m5 <- lmer(

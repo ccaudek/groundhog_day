@@ -39,8 +39,14 @@ subj_codes$Task1Rev_1 <- NULL
 
 dir <- snakemake@input[["dir_data"]]
 
+# For the sessions with reversal:
 file_names <-
   as.character(list.files(path = dir, pattern = "prl_EMA_reversal"))
+
+# For the sessions without reversal:
+# file_names <-
+#   as.character(list.files(path = dir, pattern = "prl_EMA_noreversal"))
+
 n_files <- length(file_names)
 n_files
 d_list <- list()

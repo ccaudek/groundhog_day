@@ -1,27 +1,61 @@
-# Author: Corrado Caudek
-# Project: Groundhog Day
+# Important note:
+# All paths defined in this configuration file must be either
+# absolute or relative to the location of the Snakefile!
 
-
-from pathlib import Path
 import os
+from pathlib import Path
+
+# Configuration file
+if len(config) == 0:
+    if os.path.isfile("config/config.yaml"):
+
+        configfile: "config/config.yaml"
+
+    else:
+        sys.exit(
+            "".join(
+                [
+                    "Make sure there is a config.yaml file in ",
+                    os.getcwd(),
+                    " or specify one with the --configfile commandline parameter.",
+                ]
+            )
+        )
+
+
+## Sanitize provided input and output directories
+import re
+
+
+def getpath(str):
+    if str in ["", ".", "./"]:
+        return ""
+    if str.startswith("./"):
+        regex = re.compile("^\./?")
+        str = regex.sub("", str)
+    if not str.endswith("/"):
+        str += "/"
+    return str
+
 
 print(f"Current directory: {Path.cwd()}")
 print(f"Home directory: {Path.home()}")
 
+prepdir = getpath(config["output_prep"])
+brmsdir = getpath(config["output_brms"])
 
-## Configuration file
-configfile: "config.yaml"
+Renv = "workflows/envs/environment_R.yaml"
 
 
 # Run all analyses
 rule all:
     input:
-        "data/prep/groundhog_raw.RDS",
-        "data/prep/groundhog_clean.RDS",
-        "data/prep/groundhog_hddmrl_data.csv",
-        "results/brms/fitted_models/brms_moodpre_1.RDS",
-        "results/brms/tables/brms_moodpre_1.csv",
-        "workflows/report/control_report.html",
+        os.path.join(prepdir, "groundhog_raw.RDS"),
+        os.path.join(prepdir, "groundhog_clean.RDS"),
+        # os.path.join(prepdir, "groundhog_hddmrl_data.csv"),
+        # os.path.join(brmsdir, "fitted_models", "brms_moodpre_1.RDS"),
+        # os.path.join(brmsdir, "tables", "brms_moodpre_1.csv"),
+        # "workflows/report/control_report.html",
 
 
 # include: "workflows/rules/common.smk"
@@ -37,6 +71,8 @@ rule read_data:
         rds=config["complete_data_raw"],
     log:
         "logs/read_data.log",
+    conda:
+        Renv
     script:
         "workflows/scripts/import_mpath_data.R"
 
@@ -49,6 +85,8 @@ rule data_wrangling:
         clean=config["cleaned_data"],
     log:
         "logs/data_wrangling.log",
+    conda:
+        Renv
     script:
         "workflows/scripts/data_wrangling.R"
 
@@ -62,6 +100,8 @@ rule moodpre_tilda_control:
         csv=config["brms_table_1"],
     log:
         "logs/moodpre_tilda_control.log",
+    conda:
+        Renv
     script:
         "workflows/scripts/brms_moodpre_control.R"
 
@@ -71,6 +111,8 @@ rule control_report:
         clean=config["cleaned_data"],
     output:
         "workflows/report/control_report.html",
+    conda:
+        Renv
     script:
         "workflows/scripts/control.Rmd"
 
@@ -83,6 +125,8 @@ rule data_for_hddmrl:
         hddmrl=config["hddmrl_data"],
     log:
         "logs/data_for_hddmrl.log",
+    conda:
+        Renv
     script:
         "workflows/scripts/hddmrl_data.R"
 

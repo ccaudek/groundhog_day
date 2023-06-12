@@ -7,6 +7,8 @@
 # Last Modified Date: Sun Jun 11 11:55:20 2023
 #
 # 👉 
+# 
+# https://psycnet.apa.org/manuscript/2018-31349-001.pdf
 
 log <- file(snakemake@log[[1]], open="wt")
 sink(log)
@@ -49,17 +51,24 @@ df_byday <- d |>
 #' https://psyarxiv.com/xf2pw/
 df_byday$user_day <- paste(df_byday$user_id, df_byday$ema_number, sep = "_")
 
-plot(density(df_byday$mood_pre))
+# plot(density(df_byday$mood_pre))
+
+# fm <- lmer(
+#   mood_pre ~ 1 + ema_number + control +
+#     (1 + ema_number + control | user_id),
+#   data = df_byday
+# )
 
 bmod <- brm(
-  mood_pre ~ 1 + control +
-    (1 + control | user_id) + (1 | ema_number),
+  mood_pre ~ 1 + ema_number + control +
+    (1 + ema_number + control | user_id),
   prior = c(
     prior(normal(0, 1), class = "b"),
     prior(normal(0, 1), class = "Intercept"),
-    prior(student_t(4, 0, 1), class = "sigma")
+    prior(student_t(4, 0, 1), class = "sigma"),
+    prior(normal(0, 1), class = "quantile")
   ),
-  family = skew_normal(),
+  family = asym_laplace(),
   data = df_byday,
   init = 0.01,
   backend = "cmdstanr"

@@ -1,0 +1,3 @@
+WorkflowError in file /Users/corrado/_repositories/groundhog_day/workflows/Snakefile, line 14:
+Workflow defines configfile config/config.yaml but it is not present or accessible (full checked path: /Users/corrado/_repositories/groundhog_day/workflows/config/config.yaml).
+  File "/Users/corrado/_repositories/groundhog_day/workflows/Snakefile", line 14, in <module>
