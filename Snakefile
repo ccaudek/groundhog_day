@@ -138,16 +138,16 @@ rule import_quest_data:
 
 
 # Rosenberg Self Esteem Scale
-rule select_rows_rosenberg:
+rule select_cols_rosenberg:
     input:
         quest=os.path.join(prepdir, "quest.csv"),
     output:
         csv=os.path.join(prepdir, "quest_scales", "rosenberg_items.csv"),
     log:
-        "logs/select_rows_rosenberg.log",
+        "logs/select_cols_rosenberg.log",
     script:
         # "workflows/scripts/select_rows_rosenberg.R"
-        os.path.join(scriptsdir, "select_rows_rosenberg.R")
+        os.path.join(scriptsdir, "select_cols_rosenberg.R")
 
 
 rule scoring_rosenberg:
