@@ -4,6 +4,10 @@
 
 import os
 from pathlib import Path
+from snakemake.utils import min_version
+
+# Snake Version
+min_version("5.7.1")
 
 # Configuration file
 if len(config) == 0:
@@ -13,13 +17,9 @@ if len(config) == 0:
 
     else:
         sys.exit(
-            "".join(
-                [
-                    "Make sure there is a config.yaml file in ",
-                    os.getcwd(),
-                    " or specify one with the --configfile commandline parameter.",
-                ]
-            )
+            "Looks like there is no config.yaml file in "
+            + os.getcwd()
+            + " make sure there is one or at least specify one with the --configfile commandline parameter."
         )
 
 
@@ -43,6 +43,7 @@ print(f"Home directory: {Path.home()}")
 
 prepdir = getpath(config["output_prep"])
 brmsdir = getpath(config["output_brms"])
+scriptsdir = getpath(config["scripts_dir"])
 
 Renv = "workflows/envs/environment_R.yaml"
 
@@ -55,10 +56,9 @@ rule all:
         # os.path.join(prepdir, "groundhog_hddmrl_data.csv"),
         # os.path.join(brmsdir, "fitted_models", "brms_moodpre_1.RDS"),
         # os.path.join(brmsdir, "tables", "brms_moodpre_1.csv"),
-        # "workflows/report/control_report.html",
-
-
-# include: "workflows/rules/common.smk"
+        "workflows/report/control_report.html",
+        os.path.join(prepdir, "quest.csv"),
+        os.path.join(prepdir, "quest_scales", "rosenberg_scores.csv"),
 
 
 # Read individual PRL files and create a single file
@@ -71,8 +71,6 @@ rule read_data:
         rds=config["complete_data_raw"],
     log:
         "logs/read_data.log",
-    conda:
-        Renv
     script:
         "workflows/scripts/import_mpath_data.R"
 
@@ -85,8 +83,6 @@ rule data_wrangling:
         clean=config["cleaned_data"],
     log:
         "logs/data_wrangling.log",
-    conda:
-        Renv
     script:
         "workflows/scripts/data_wrangling.R"
 
@@ -100,8 +96,6 @@ rule moodpre_tilda_control:
         csv=config["brms_table_1"],
     log:
         "logs/moodpre_tilda_control.log",
-    conda:
-        Renv
     script:
         "workflows/scripts/brms_moodpre_control.R"
 
@@ -111,8 +105,6 @@ rule control_report:
         clean=config["cleaned_data"],
     output:
         "workflows/report/control_report.html",
-    conda:
-        Renv
     script:
         "workflows/scripts/control.Rmd"
 
@@ -125,16 +117,57 @@ rule data_for_hddmrl:
         hddmrl=config["hddmrl_data"],
     log:
         "logs/data_for_hddmrl.log",
-    conda:
-        Renv
     script:
         "workflows/scripts/hddmrl_data.R"
+        # config["hddmrl_data"]
+
+
+rule import_quest_data:
+    input:
+        q1=config["quest1"],
+        q2=config["quest2"],
+        q3=config["quest3"],
+        q4=config["quest4"],
+    output:
+        csv=os.path.join(prepdir, "quest.csv"),
+    log:
+        "logs/import_quest_data.log",
+    script:
+        # "workflows/scripts/import_quest_data.R"
+        config["import_quest_data"]
+
+
+# Rosenberg Self Esteem Scale
+rule select_rows_rosenberg:
+    input:
+        quest=os.path.join(prepdir, "quest.csv"),
+    output:
+        csv=os.path.join(prepdir, "quest_scales", "rosenberg_items.csv"),
+    log:
+        "logs/select_rows_rosenberg.log",
+    script:
+        # "workflows/scripts/select_rows_rosenberg.R"
+        os.path.join(scriptsdir, "select_rows_rosenberg.R")
+
+
+rule scoring_rosenberg:
+    input:
+        ros=os.path.join(prepdir, "quest_scales", "rosenberg_items.csv"),
+    output:
+        csv=os.path.join(prepdir, "quest_scales", "rosenberg_scores.csv"),
+    log:
+        "logs/scoring_rosenberg.log",
+    script:
+        os.path.join(scriptsdir, "scoring_rosenberg.R")
+
+
+# include: "workflows/rules/rosenberg.smk"
 
 
 # Success and failure messages
 onsuccess:
-    print("\n 🎉 Success! The Snakemake workflow is completed.\n")
+    print("\nThe Snakemake workflow is completed.\n")
 
 
 onerror:
-    print("\n ⛔️ Error! The Snakemake workflow aborted.\n")
+    print("\nThe Snakemake workflow aborted.\n")

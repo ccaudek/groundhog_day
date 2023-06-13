@@ -33,3 +33,16 @@ output_prep: data/prep
 #---------------------------------------------------------------------------------------------
 output_brms: results/brms
 #---------------------------------------------------------------------------------------------
+
+# Path to the workflows/scripts folder. 
+scripts_dir: workflows/scripts
+
+# Paths to raw questionnaires data
+quest1: "data/raw/quest/quest1/data.xlsx"
+quest2: "data/raw/quest/quest2/data.xlsx"
+quest3: "data/raw/quest/quest3/data.xlsx"
+quest4: "data/raw/quest/quest4/data.xlsx"
+
+# Scripts
+hddmrl_data: "workflows/scripts/hddmrl_data.R"
+import_quest_data: "workflows/scripts/import_quest_data.R"

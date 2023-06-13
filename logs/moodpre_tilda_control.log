@@ -1,30 +1,9 @@
 `summarise()` has grouped output by 'user_id'. You can override using the `.groups` argument.
 Start sampling
-Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-Chain 1 Exception: skew_normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.stan', line 100, column 4 to column 53)
-Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-Chain 1 
-Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-Chain 2 Exception: skew_normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.stan', line 100, column 4 to column 53)
-Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-Chain 2 
-Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-Chain 3 Exception: skew_normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.stan', line 100, column 4 to column 53)
-Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-Chain 3 
-Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-Chain 4 Exception: skew_normal_lpdf: Scale parameter is 0, but must be positive! (in '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.stan', line 100, column 4 to column 53)
-Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-Chain 4 
 Warning messages:
-1: In readLines(hpp_path) :
-  incomplete final line found on '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.hpp'
-2: In readLines(private$hpp_file_) :
-  incomplete final line found on '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpwVKSti/model-bbf316a22b7e.hpp'
-Warning message:
-Found 8 observations with a pareto_k > 0.7 in model 'bmod'. It is recommended to set 'moment_match = TRUE' in order to perform moment matching for problematic observations.  
+1: Rows containing NAs were excluded from the model. 
+2: In readLines(hpp_path) :
+  incomplete final line found on '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpT3wREC/model-11ec83b2c81a5.hpp'
+3: In readLines(private$hpp_file_) :
+  incomplete final line found on '/var/folders/hl/dt523djx7_q7xjrthzjpdvc40000gn/T/RtmpT3wREC/model-11ec83b2c81a5.hpp'
 [1] "Save brm object"

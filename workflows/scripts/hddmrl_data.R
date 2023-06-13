@@ -110,7 +110,7 @@ for_hddm_df <- df_sorted |>
 # ---------------------
 
 rio::export(for_hddm_df, file = snakemake@output[["hddmrl"]])
-# rio::export(for_hddm_df, "marmotta.csv")
+# rio::export(for_hddm_df, "data/prep/groundhog_hddmrl_data.csv")
 
 
 # eof ----

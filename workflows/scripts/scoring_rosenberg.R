@@ -1,6 +1,8 @@
-library(tidyverse)
-library(rio)
-library(here)
+suppressPackageStartupMessages({
+  library("tidyverse")
+  library("rio")
+  library("here")
+})
 
 source(here::here("workflows", "scripts", "funs", "funs_quest.R"))
 
@@ -12,7 +14,8 @@ rses <- recode_rosenberg_numeric(rosenberg_items)
 
 rio::export(
   rses, 
-  here::here("data", "prep", "quest_scales", "rosenberg_scores.csv")
+  file = snakemake@output[["csv"]]
+  # here::here("data", "prep", "quest_scales", "rosenberg_scores.csv")
 )
 
 
