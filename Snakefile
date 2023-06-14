@@ -59,6 +59,7 @@ rule all:
         "workflows/report/control_report.html",
         os.path.join(prepdir, "quest.csv"),
         os.path.join(prepdir, "quest_scales", "rosenberg_scores.csv"),
+        "data/my_test.csv",
 
 
 # Read individual PRL files and create a single file
@@ -164,10 +165,5 @@ rule scoring_rosenberg:
 # include: "workflows/rules/rosenberg.smk"
 
 
-# Success and failure messages
-onsuccess:
-    print("\nThe Snakemake workflow is completed.\n")
-
-
-onerror:
-    print("\nThe Snakemake workflow aborted.\n")
+include: "workflows/rules/closing_messages.smk"
+include: "workflows/rules/my_test.smk"

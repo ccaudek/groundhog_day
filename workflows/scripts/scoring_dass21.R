@@ -1,16 +1,22 @@
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(rio)
-  library(here)
-})
+# DASS-21
 
-source(here::here("workflows", "scripts", "funs", "funs_quest.R"))
+suppressPackageStartupMessages({
+  library("tidyverse")
+  library("rio")
+  library("here")
+  library("devtools")
+})
 
 dass21_items <- rio::import(
   here::here("data", "prep", "quest_scales", "dass21_items.csv")
 )
 
-dass21_subscales <- recode_dass21_numeric(dass21_items)
+# Source sias.R on GitHub, which includes the function scoring_tripm().
+source_url(
+  "https://raw.githubusercontent.com/ccaudek/r_functions/main/dass21.R"
+)
+
+dass21_subscales <- scoring_dass21(dass21_items)
 
 rio::export(
   dass21_subscales, 

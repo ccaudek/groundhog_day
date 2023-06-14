@@ -1,29 +1,23 @@
-# Combine the individual subjects' files into a single file
-# with all the subjects' data.
+#!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library(rio))
-suppressPackageStartupMessages(library(tidyverse))
+# This is a test of the smk files. See the following tutorial:
+# https://github.com/fritzbayer/snakemake-with-R/blob/main/scr/test-script.R
 
-# Read subject codes from Excel file
-subj_codes <- rio::import(
-    # "data/raw/data.xlsx"
-    snakemake@input[[1]]
-) |>
-    dplyr::select(
-        subj_code_1, Task1Rev_1,
-        context_1, control_1,
-        post_context_1, coin, TIME_start,
-        TIME_end, TIME_total
-    )
+# libraries
+suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library("rio"))
+suppressPackageStartupMessages(library("tidyverse"))
 
-# print(unique(subj_codes$subj_code_1))
+# parse data
+parser <- ArgumentParser(description= 'This progrom does stuff')
+parser$add_argument('--input', '-i', help= 'Input file')
+parser$add_argument('--output', '-o', help= 'Output file')
+# parser$add_argument('--myFactor', '-f', help= 'Imported variable', type= 'double')
+xargs <- parser$parse_args()
 
-subj_codes <- subj_codes[!is.na(subj_codes$Task1Rev_1), ]
-subj_codes$subj_idx <- subj_codes$Task1Rev_1
-subj_codes$Task1Rev_1 <- NULL
-
-saveRDS(
-    subj_codes,
-    file = snakemake@output[[1]]
-    #  file = "data/prep/groundhog_raw.RDS"
-)
+# Read data from Excel file
+dat <- rio::import(xargs$input) 
+# Do something with the data.
+foo <- data.frame(x = dat$coin)
+# Save a csv file in the specified location.
+rio::export(foo, xargs$output)

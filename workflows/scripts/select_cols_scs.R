@@ -1,8 +1,13 @@
-library(tidyverse)
-library(rio)
-library(here)
+# Self-Compassion Scale
 
-source("workflows/scripts/funs/funs_quest.R")
+suppressPackageStartupMessages({
+  library("tidyverse")
+  library("rio")
+  library("here")
+})
+
+source(here::here("workflows", "scripts", "funs", "funs_quest.R"))
+
 d <- rio::import(here::here("data", "prep", "quest.csv"))
 
 NITEMS <- 26
@@ -15,7 +20,6 @@ scs_items <- d |>
 
 scs_items_names <- paste0("scs_", 1:NITEMS)
 scs_items_names_plus_id <- c("user_id", scs_items_names)
-
 colnames(scs_items) <- scs_items_names_plus_id
 
 # Add catch item to catch_items.csv file.

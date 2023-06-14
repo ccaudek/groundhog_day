@@ -1,28 +1,26 @@
-# No attachment to Ego scale
+# No Attachment to Ego Scale
 
 suppressPackageStartupMessages({
-  library(tidyverse)
-  library(rio)
-  library(here)
+  library("tidyverse")
+  library("rio")
+  library("here")
+  library("devtools")
 })
 
-ego_items <- rio::import(
+nates_items <- rio::import(
   here::here("data", "prep", "quest_scales", "nates_items.csv")
 )
 
-# Identify numeric columns
-numeric_cols <- sapply(ego_items, is.numeric)
+# Source nates.R on GitHub, which includes the function scoring_nates().
+source_url(
+  "https://raw.githubusercontent.com/ccaudek/r_functions/main/nates.R"
+)
 
-# Create new column with the sum of numeric columns
-ego_items$nates_score <- rowSums(ego_items[, numeric_cols]) 
-
-ego_scores_df <- ego_items |> 
-  dplyr::select(-c(ego_1, ego_2, ego_3, ego_4, ego_5, ego_6, ego_7))
+nates_subscales <- scoring_nates(nates_items)
 
 rio::export(
-  ego_scores_df, 
+  nates_subscales,
   here::here("data", "prep", "quest_scales", "nates_scores.csv")
 )
 
 # eof ----
-

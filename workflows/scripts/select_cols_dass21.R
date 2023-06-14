@@ -16,7 +16,7 @@ dass21_items <- d |>
   dplyr::rename(user_id = num_cell_tot_1) 
   # there is no catch item with name dass_something
 
-dass21_items_names <- paste0("dass_", 1:NITEMS)
+dass21_items_names <- paste0("dass21_", 1:NITEMS)
 dass21_items_names_plus_id <- c("user_id", dass21_items_names)
 
 colnames(dass21_items) <- dass21_items_names_plus_id

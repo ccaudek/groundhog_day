@@ -1,4 +1,13 @@
+#' CERQ
+
+suppressPackageStartupMessages({
+  library("tidyverse")
+  library("rio")
+})
+
 d <- rio::import(here::here("data", "prep", "quest.csv"))
+
+source(here::here("workflows", "scripts", "funs", "funs_quest.R"))
 
 NITEMS <- 36
 
@@ -20,3 +29,6 @@ rio::export(
   cerq_items,
   here::here("data", "prep", "quest_scales", "cerq_items.csv")
 )
+
+# eof ----
+

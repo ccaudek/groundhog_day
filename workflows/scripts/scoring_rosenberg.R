@@ -1,16 +1,21 @@
+# Rosenberg Self-Esteem Scale.
+
 suppressPackageStartupMessages({
   library("tidyverse")
   library("rio")
   library("here")
 })
 
-source(here::here("workflows", "scripts", "funs", "funs_quest.R"))
-
 rosenberg_items <- rio::import(
   here::here("data", "prep", "quest_scales", "rosenberg_items.csv")
 )
 
-rses <- recode_rosenberg_numeric(rosenberg_items)
+# Source rosenberg.R on GitHub, which includes the function scoring_rosenberg().
+source_url(
+  "https://raw.githubusercontent.com/ccaudek/r_functions/main/rosenberg.R"
+)
+
+rses <- scoring_rosenberg(rosenberg_items)
 
 rio::export(
   rses, 
@@ -18,10 +23,4 @@ rio::export(
   # here::here("data", "prep", "quest_scales", "rosenberg_scores.csv")
 )
 
-
-# hist(rses$rosenberg)
-
-# The scale ranges from 0-30. Scores between 15 and 25 are within normal 
-# range; scores below 15 suggest low self-esteem.
-# The Italian version responses are between 1 and 4 (the original response
-# scale is between 0 and 3).
+# eof ----
