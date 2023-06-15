@@ -4,6 +4,7 @@ suppressPackageStartupMessages({
   library("tidyverse")
   library("rio")
   library("here")
+  library("devtools")
 })
 
 rosenberg_items <- rio::import(
