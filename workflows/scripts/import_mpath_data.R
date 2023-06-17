@@ -8,17 +8,18 @@
 #
 # 👉 
 
+suppressPackageStartupMessages(library("rio"))
+suppressPackageStartupMessages(library("tidyverse"))
+
 log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-suppressPackageStartupMessages(library("rio"))
-suppressPackageStartupMessages(library("tidyverse"))
-
-# ---------------------
+# ----------------------------------
 # Read subject codes from Excel file
-# ---------------------
+# ----------------------------------
 
+print("Loading data")
 subj_codes <- rio::import(
   snakemake@input[["xlsx"]]
 ) |>
@@ -33,9 +34,9 @@ subj_codes <- subj_codes[!is.na(subj_codes$Task1Rev_1), ]
 subj_codes$subj_idx <- subj_codes$Task1Rev_1
 subj_codes$Task1Rev_1 <- NULL
 
-# ---------------------
+# -----------------------------------
 # Import PRL data form multiple files
-# ---------------------
+# -----------------------------------
 
 dir <- snakemake@input[["dir_data"]]
 
@@ -78,17 +79,17 @@ for (i in 1:n_files) {
 # Convert list into data.frame
 df <- do.call(rbind.data.frame, d_list)
 
-# ---------------------
-# Join files with PRL data and personal information
-# ---------------------
+# --------------------------------------
+# Join PRL data and personal information
+# --------------------------------------
 
 d <- left_join(df, subj_codes, by = "subj_idx")
 
-# ---------------------
+# ------------------
 # Save for later use
-# ---------------------
+# ------------------
 
+print("Saving output")
 saveRDS(d, file = snakemake@output[["rds"]])
-
 
 # eof ----

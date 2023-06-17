@@ -2,4 +2,5 @@ Warning message:
 Number of logged events: 7 
 Warning message:
 Number of logged events: 7 
-`summarise()` has grouped output by 'user_id'. You can override using the `.groups` argument.
+`summarise()` has grouped output by 'user_id'. You can override
+using the `.groups` argument.

@@ -1,6 +1,13 @@
 # Add item to catch_items.csv --------------------------------------------------
 
 add_catch_item <- function(user_id, catch_item) {
+  
+  suppressPackageStartupMessages({
+    library("here")
+    library("tidyverse")
+    library("rio")
+  })
+  
   directory <- here::here("data", "prep", "quest_scales")
   file_name <- "catch_items.csv"
 
@@ -27,7 +34,7 @@ add_catch_item <- function(user_id, catch_item) {
   }
 }
 
-#' 
+
 #' # Recode Rosenberg Self-Esteem Scale --------------------------------------
 #' 
 #' #' @description scoring Rosenberg self-esteem scale.

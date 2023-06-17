@@ -1,6 +1,11 @@
-library("rio")
-library("dplyr")
+# import_quest_data.R
 
+suppressPackageStartupMessages({
+  library("rio")
+  library("dplyr")
+}) 
+
+print("Loading data")
 # Create a vector file_names containing the file names "quest1", "quest2", 
 # "quest3", and "quest4". Iterate over each file name using a loop, import 
 # the data, and perform the necessary data transformations. Store the 
@@ -45,6 +50,7 @@ modified_columns <-
 colnames(quest_dat)[2:14] <- modified_columns
 
 # Save csv file.
+print("Saving output")
 rio::export(
   quest_dat,
   # here::here("data", "prep", "quest.csv")
